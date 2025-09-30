@@ -1,0 +1,17 @@
+# Ignore All node_modules in any subProject
+node_modules/
+
+#Logs
+*.log
+npm-debug.log*
+yar-debug.log*
+yarn-error.log*
+
+#Environment files
+.env
+.env.local
+.env.*.local
+
+# OS junk
+.DS_Store
+Thumbs.db

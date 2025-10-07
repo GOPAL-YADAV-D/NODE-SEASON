@@ -35,3 +35,10 @@ const CalculateLength = (str, cb) =>{
 CalculateLength("Hello Shubham", (len) => {
     console.log("Length of String is: ", len);
 });
+
+const sayHello = () => {
+    console.log("Hello from Async.js");
+}
+
+// Module for Exporting
+module.exports = { sayHello };

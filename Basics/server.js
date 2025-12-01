@@ -19,6 +19,8 @@ const server = http.createServer((req, res) => {
 
     if (url === '/message' && req.method === 'POST'){
         const filepath = path.join(__dirname, 'message.txt');
+
+        // Method One: Assuming Only Textual MIME Types
         let body = '';
         const MAX_SIZE = 1e6;
 
@@ -32,7 +34,7 @@ const server = http.createServer((req, res) => {
 
         req.on('end', async ()=>{
             const params = new URLSearchParams(body);
-            const message = params.get('message');
+            const message = params.get('message') || "";
 
             try {
                 await fs.appendFile(filepath, message + '\n');
@@ -45,6 +47,40 @@ const server = http.createServer((req, res) => {
             res.end();
         })  
         return;
+
+
+        // Method Two: Handling Binary Data (Uncomment to use)
+        // const dataChunks = [];
+        // const MAX_SIZE = 1 * 1024 * 1024;
+        // let totalSize = 0;
+
+        // req.on('data', (chunk) =>{
+        //     totalSize += chunk.length;
+
+        //     if(totalSize > MAX_SIZE){
+        //         req.destroy();
+        //     }
+
+        //     dataChunks.push(chunk);
+        // })
+
+        // req.on('end',async () => {
+        //     const buffer = Buffer.concat(dataChunks);
+        //     const bodyString = buffer.toString();
+        //     const params = new URLSearchParams(bodyString);
+        //     const message = params.get('message');
+
+        //     try {
+        //         await fs.appendFile(filepath, message + '\n');
+        //     } catch (err){
+        //         console.error("File Write Failed:", err)
+        //     }
+
+        //     res.statusCode = 302;
+        //     res.setHeader('Location', '/');
+        //     res.end();
+        // })
+        // return;
     }
     res.setHeader('Content-Type', 'text/html');
     res.write('<html>');

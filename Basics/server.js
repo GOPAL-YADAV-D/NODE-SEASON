@@ -1,50 +1,69 @@
 const http = require('http');
 const fs = require('fs').promises;
-const { constants } = require('fs');
 const path = require('path');
 
-const server = http.createServer((req, res) => {
-    // console.log(req.url, req.method, req.headers);
+const PORT = 3000;
 
-    const url = req.url;
-    const method = req.method;
+// 1 MB
+// To test set to 10 bytes.
+const MAX_SIZE = 1e6; 
+
+const server = http.createServer((req, res) => {
+
+    const { url, method } = req;
 
     if (url === '/'){
-        res.write('<html>');
-        res.write('<head><title>My First Page</title></head>');
-        res.write('<body><form action="/message" method="POST"><input type="text" name="message"><button type="submit">Send</button></form></body>');
-        res.write('</html>');
-        return res.end();
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.end(`
+            <html>
+            <head><title>Form</title></head>
+            <body>
+                <form action="/message" method="POST">
+                    <input type="text" name="message">
+                    <button type="submit">Send</button>
+                </form>
+            </body>
+            </html>
+        `);
+        return;
     }
 
-    if (url === '/message' && req.method === 'POST'){
+    if (url === '/message' && method === 'POST'){
         const filepath = path.join(__dirname, 'message.txt');
+        let totalSize = 0;
+        let aborted = false;
 
         // Method One: Assuming Only Textual MIME Types
         let body = '';
-        const MAX_SIZE = 1e6; // To Test set to 10 bytes (1e1)
 
         req.on('data', (chunk) => {
-            body += chunk.toString();
+            totalSize += chunk.length;
 
-            if(body.length > MAX_SIZE){
+            if(totalSize > MAX_SIZE){
+                aborted = true;
                 
                 // Terminates the Connection Abruptly and the Page and sends a ERR_EMPTY_RESPONSE in Browser
-                req.destroy(); 
+                // req.destroy(); 
 
                 // res.statusCode = 413;
                 // Location Header is redundant
                 // res.setHeader('Content-Type', 'text/plain');
-                // res.end("Payload to Large");
 
-                // req.removeAllListeners('data');
-                // req.removeAllListeners('end');
+                res.writeHead(413, {'Content-Type': 'text/plain'}); 
+                res.end("Payload to Large");
 
-                // return;
+                req.removeAllListeners('data');
+                req.removeAllListeners('end');
+
+                return;
             }
+            
+            body += chunk.toString();
         });
 
         req.on('end', async ()=>{
+            if (aborted) return;
+
             const params = new URLSearchParams(body);
             const message = params.get('message') || "";
 
@@ -63,8 +82,6 @@ const server = http.createServer((req, res) => {
 
         // Method Two: Handling Binary Data (Uncomment to use)
         /*const dataChunks = [];
-        const MAX_SIZE = 1 * 1024 * 1024;
-        let totalSize = 0;
 
         req.on('data', (chunk) =>{
             totalSize += chunk.length;

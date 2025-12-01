@@ -22,13 +22,25 @@ const server = http.createServer((req, res) => {
 
         // Method One: Assuming Only Textual MIME Types
         let body = '';
-        const MAX_SIZE = 1e6;
+        const MAX_SIZE = 1e6; // To Test set to 10 bytes (1e1)
 
         req.on('data', (chunk) => {
             body += chunk.toString();
 
             if(body.length > MAX_SIZE){
-                req.destroy();
+                
+                // Terminates the Connection Abruptly and the Page and sends a ERR_EMPTY_RESPONSE in Browser
+                req.destroy(); 
+
+                // res.statusCode = 413;
+                // Location Header is redundant
+                // res.setHeader('Content-Type', 'text/plain');
+                // res.end("Payload to Large");
+
+                // req.removeAllListeners('data');
+                // req.removeAllListeners('end');
+
+                // return;
             }
         });
 
@@ -50,37 +62,37 @@ const server = http.createServer((req, res) => {
 
 
         // Method Two: Handling Binary Data (Uncomment to use)
-        // const dataChunks = [];
-        // const MAX_SIZE = 1 * 1024 * 1024;
-        // let totalSize = 0;
+        /*const dataChunks = [];
+        const MAX_SIZE = 1 * 1024 * 1024;
+        let totalSize = 0;
 
-        // req.on('data', (chunk) =>{
-        //     totalSize += chunk.length;
+        req.on('data', (chunk) =>{
+            totalSize += chunk.length;
 
-        //     if(totalSize > MAX_SIZE){
-        //         req.destroy();
-        //     }
+            if(totalSize > MAX_SIZE){
+                req.destroy();
+            }
 
-        //     dataChunks.push(chunk);
-        // })
+            dataChunks.push(chunk);
+        })
 
-        // req.on('end',async () => {
-        //     const buffer = Buffer.concat(dataChunks);
-        //     const bodyString = buffer.toString();
-        //     const params = new URLSearchParams(bodyString);
-        //     const message = params.get('message');
+        req.on('end',async () => {
+            const buffer = Buffer.concat(dataChunks);
+            const bodyString = buffer.toString();
+            const params = new URLSearchParams(bodyString);
+            const message = params.get('message');
 
-        //     try {
-        //         await fs.appendFile(filepath, message + '\n');
-        //     } catch (err){
-        //         console.error("File Write Failed:", err)
-        //     }
+            try {
+                await fs.appendFile(filepath, message + '\n');
+            } catch (err){
+                console.error("File Write Failed:", err)
+            }
 
-        //     res.statusCode = 302;
-        //     res.setHeader('Location', '/');
-        //     res.end();
-        // })
-        // return;
+            res.statusCode = 302;
+            res.setHeader('Location', '/');
+            res.end();
+        })
+        return;*/
     }
     res.setHeader('Content-Type', 'text/html');
     res.write('<html>');

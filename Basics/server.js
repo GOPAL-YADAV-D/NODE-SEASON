@@ -69,13 +69,14 @@ const server = http.createServer((req, res) => {
 
             try {
                 await fs.appendFile(filepath, message + '\n');
+                res.writeHead(302, {'Location': '/'});
+                res.end();
             } catch (err){
-                console.error("File Write Failed:", err)
-            }
+                console.error("File Write Failed:", err);
 
-            res.statusCode = 302;
-            res.setHeader('Location', '/');
-            res.end();
+                res.writeHead(500, {'Content-Type' : 'text/plain'});
+                res.end("Internal Server Error");
+            }
         })  
         return;
 

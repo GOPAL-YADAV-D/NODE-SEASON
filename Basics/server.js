@@ -20,22 +20,24 @@ const server = http.createServer((req, res) => {
     if (url === '/message' && req.method === 'POST'){
         const filepath = path.join(__dirname, 'message.txt');
         let body = '';
+        const MAX_SIZE = 1e6;
 
         req.on('data', (chunk) => {
             body += chunk.toString();
-        });
 
-        console.log(body);
+            if(body.length > MAX_SIZE){
+                req.destroy();
+            }
+        });
 
         req.on('end', async ()=>{
             const params = new URLSearchParams(body);
             const message = params.get('message');
 
             try {
-                await fs.access(filepath, constants.F_OK);
-                await fs.appendFile(filepath, `\n${message}`);
+                await fs.appendFile(filepath, message + '\n');
             } catch (err){
-                await fs.writeFile(filepath, message);
+                console.error("File Write Failed:", err)
             }
 
             res.statusCode = 302;

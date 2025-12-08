@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const {engine} = require('express-handlebars');
 
 // Custom Modules
-const rootDir = require('./util/rootPath');
+const rootDir = require('./utils/rootPath');
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const errorController = require('./controllers/error');

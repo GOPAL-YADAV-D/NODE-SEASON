@@ -1,1 +1,8 @@
-[{"title":"Book"},{"title":"Bottle"}]
+[
+  {
+    "title": "A Book",
+    "imageUrl": "https://www.oreilly.com/covers/urn:orm:book:9781491943113/400w/",
+    "description": "4.5",
+    "price": "A good book\r\n"
+  }
+]

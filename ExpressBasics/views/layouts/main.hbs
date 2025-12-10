@@ -22,7 +22,14 @@
                 <li class="main-header__item">
                     <a class="{{#if isShop}}active{{/if}}" href="/">Shop</a>
                 </li>
-
+                <li class="main-header__item">
+                    <a class="{{#if isCart}}active{{/if}}" href="/cart">Cart</a>
+                <li class="main-header__item">
+                    <a class="{{#if isProducts}}active{{/if}}" href="/products">Products</a>
+                </li>
+                <li class="main-header__item">
+                    <a class="{{#if isadminProducts}}active{{/if}}" href="/admin/products">Products</a>
+                </li>
                 <li class="main-header__item">
                     <a class="{{#if isAddProduct}}active{{/if}}" href="/admin/add-product">Add Product</a>
                 </li>`

@@ -23,9 +23,11 @@ const postAddProduct = (req, res, next) => {
 const getAdminProducts = (req, res, next) => {
   Product.fetchAll((products) => {
     res.render("admin/products", {
-      prods: products,
+      products: products,
       pageTitle: "Admin Products",
       isadminProducts: true,
+      hasProducts: products.length > 0 || 0,
+      productCss: true,
     });
   });
 };
